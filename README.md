@@ -86,6 +86,46 @@ jupyter lab dev/01_tokenizer_walkthrough.ipynb
 
 Then in Jupyter, confirm the kernel is `nanochat (.venv)` and use `Restart Kernel and Run All`.
 
+### RunPod Training
+
+For my RunPod run, use an 8 GPU pod and configure the template before launching it.
+
+Set the W&B secret in RunPod if you want online W&B logging:
+
+```text
+WANDB_API_KEY={{ RUNPOD_SECRET_WANDB_API_KEY }}
+```
+
+These variables already have defaults in [runs/runpod_template_start.sh](runs/runpod_template_start.sh), but can be overridden in the RunPod template if needed:
+
+```text
+WANDB_RUN=nanochat-speedrun
+WANDB_MODE=online
+NANOCHAT_BASE_DIR=/workspace/nanochat-cache
+NANOCHAT_REPO_URL=https://github.com/egcode/nanochat.git
+NANOCHAT_BRANCH=master
+```
+
+Paste the contents of [runs/runpod_template_start.sh](runs/runpod_template_start.sh) into the RunPod template "Container Start Command" field. This command installs system packages, clones or updates nanochat in `/workspace/nanochat`, checks out `NANOCHAT_BRANCH`, verifies the required training scripts exist, and then hands off to the container startup process. It does **not** start training automatically.
+
+After the pod starts, open a terminal in the pod and run the cheap artifact preflight:
+
+```bash
+cd /workspace/nanochat
+bash runs/preflight_artifacts.sh
+```
+
+The preflight confirms that `NANOCHAT_BASE_DIR` is writable and that tokenizer files, checkpoints, optimizer state, metadata, and report files are actually being saved.
+
+If the preflight passes, start the real 8 GPU speedrun:
+
+```bash
+cd /workspace/nanochat
+screen -L -Logfile "$NANOCHAT_BASE_DIR/speedrun.log" -S speedrun bash runs/speedrun.sh
+```
+
+Important: a running pod can cost money even before training starts. Launch this template only when ready to run preflight/speedrun, and stop or terminate the pod after preserving artifacts from `NANOCHAT_BASE_DIR`.
+
 ### Reproduce and talk to GPT-2
 
 The most fun you can have is to train your own GPT-2 and talk to it. The entire pipeline to do so is contained in the single file [runs/speedrun.sh](runs/speedrun.sh), which is designed to be run on an 8XH100 GPU node. Boot up a new 8XH100 GPU box from your favorite provider (e.g. I use and like [Lambda](https://lambda.ai/service/gpu-cloud)), and kick off the training script:
@@ -98,50 +138,6 @@ You may wish to do so in a screen session as this will take ~3 hours to run. Onc
 
 ```bash
 python -m scripts.chat_web
-```
-
-On rented/cloud machines, make sure `NANOCHAT_BASE_DIR` points to storage that survives machine shutdown. The speedrun stores tokenizer files, checkpoints, eval results, and reports there. By default it uses `~/.cache/nanochat`, but you can override it before launch, e.g.:
-
-```bash
-export NANOCHAT_BASE_DIR=/workspace/nanochat-cache
-mkdir -p "$NANOCHAT_BASE_DIR"
-screen -L -Logfile "$NANOCHAT_BASE_DIR/speedrun.log" -S speedrun bash runs/speedrun.sh
-```
-
-For RunPod templates, use two separate layers:
-
-- Container startup/bootstrap: prepare the pod, clone/update the repo, then keep the pod alive.
-- Training launch: manually start the expensive run from a shell after checking the pod.
-
-Set the W&B secret reference as an environment variable named `WANDB_API_KEY`:
-
-```text
-WANDB_API_KEY={{ RUNPOD_SECRET_WANDB_API_KEY }}
-WANDB_RUN=nanochat-speedrun
-WANDB_MODE=online
-NANOCHAT_BASE_DIR=/workspace/nanochat-cache
-NANOCHAT_REPO_URL=https://github.com/egcode/nanochat.git
-NANOCHAT_BRANCH=master
-```
-
-For the template "Container Start Command", paste the contents of [runs/runpod_template_start.sh](runs/runpod_template_start.sh), or fetch that file from GitHub after this branch is pushed. It starts with `bash -lc '...'` because RunPod expects a command string, not a script path. It installs basic packages, clones or updates `/workspace/nanochat`, checks out `NANOCHAT_BRANCH`, and keeps the pod alive. It intentionally does **not** launch training.
-
-Important: a running pod can cost money even before training starts. Use this template when you are ready to run the preflight and speedrun, and stop or terminate the pod when you are done preserving artifacts.
-
-Before starting the paid run, verify artifact saving once:
-
-```bash
-cd /workspace/nanochat
-bash runs/preflight_artifacts.sh
-```
-
-The preflight writes into a timestamped subdirectory under `NANOCHAT_BASE_DIR`, checks that tokenizer files, checkpoints, optimizer state, metadata, and report sections were created, and prints an archive command.
-
-After the preflight passes, start the paid run manually:
-
-```bash
-cd /workspace/nanochat
-screen -L -Logfile "$NANOCHAT_BASE_DIR/speedrun.log" -S speedrun bash runs/speedrun.sh
 ```
 
 And then visit the URL shown. Make sure to access it correctly, e.g. on Lambda use the public IP of the node you're on, followed by the port, so for example [http://209.20.xxx.xxx:8000/](http://209.20.xxx.xxx:8000/), etc. Then talk to your LLM as you'd normally talk to ChatGPT! Get it to write stories or poems. Ask it to tell you who you are to see a hallucination. Ask it why the sky is blue. Or why it's green. The speedrun is a 4e19 FLOPs capability model so it's a bit like talking to a kindergartener :).
