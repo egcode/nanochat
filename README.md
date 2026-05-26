@@ -94,6 +94,7 @@ Set the W&B secret in RunPod if you want online W&B logging. This replaces runni
 
 ```text
 WANDB_API_KEY={{ RUNPOD_SECRET_WANDB_API_KEY }}
+HOME=/workspace
 ```
 
 These variables already have defaults in [runs/runpod_template_start.sh](runs/runpod_template_start.sh), but can be overridden in the RunPod template if needed:
