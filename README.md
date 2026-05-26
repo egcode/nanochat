@@ -90,7 +90,7 @@ Then in Jupyter, confirm the kernel is `nanochat (.venv)` and use `Restart Kerne
 
 For my RunPod run, use an 8 GPU pod and configure the template before launching it.
 
-Set the W&B secret in RunPod if you want online W&B logging:
+Set the W&B secret in RunPod if you want online W&B logging. This replaces running `wandb login` interactively:
 
 ```text
 WANDB_API_KEY={{ RUNPOD_SECRET_WANDB_API_KEY }}
