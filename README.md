@@ -124,6 +124,16 @@ cd /workspace/nanochat
 screen -L -Logfile "$NANOCHAT_BASE_DIR/speedrun.log" -S speedrun bash runs/speedrun.sh
 ```
 
+After training finishes, run the web chat UI from the same pod. Make sure the RunPod template exposes HTTP port `8000`, then start the server:
+
+```bash
+cd /workspace/nanochat
+source .venv/bin/activate
+python -m scripts.chat_web
+```
+
+The server defaults to `0.0.0.0:8000`. Open the RunPod HTTP service URL for port `8000`.
+
 Important: a running pod can cost money even before training starts. Launch this template only when ready to run preflight/speedrun, and stop or terminate the pod after preserving artifacts from `NANOCHAT_BASE_DIR`.
 
 ### Reproduce and talk to GPT-2
