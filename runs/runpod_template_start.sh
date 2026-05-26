@@ -31,19 +31,13 @@ fi
 [[ -n "${GIT_USER_NAME:-}" ]] && git config --global user.name "$GIT_USER_NAME"
 [[ -n "${GIT_USER_EMAIL:-}" ]] && git config --global user.email "$GIT_USER_EMAIL"
 
-clone_url="$NANOCHAT_REPO_URL"
-if [[ -n "${GITHUB_PAT:-}" && "$NANOCHAT_REPO_URL" == https://github.com/* ]]; then
-  clone_url="${NANOCHAT_REPO_URL/https:\/\//https:\/\/${GITHUB_PAT}@}"
-fi
-
 if [[ -d "$NANOCHAT_DIR/.git" ]]; then
   git -C "$NANOCHAT_DIR" fetch origin "$NANOCHAT_BRANCH"
   git -C "$NANOCHAT_DIR" checkout "$NANOCHAT_BRANCH"
   git -C "$NANOCHAT_DIR" pull --ff-only origin "$NANOCHAT_BRANCH"
 else
   [[ -e "$NANOCHAT_DIR" ]] && fail "$NANOCHAT_DIR exists but is not a git repo"
-  git clone --branch "$NANOCHAT_BRANCH" "$clone_url" "$NANOCHAT_DIR"
-  git -C "$NANOCHAT_DIR" remote set-url origin "$NANOCHAT_REPO_URL"
+  git clone --branch "$NANOCHAT_BRANCH" "$NANOCHAT_REPO_URL" "$NANOCHAT_DIR"
 fi
 
 cd "$NANOCHAT_DIR"
