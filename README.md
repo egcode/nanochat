@@ -153,7 +153,7 @@ source .venv/bin/activate
 python -m scripts.chat_web
 ```
 
-The server defaults to `0.0.0.0:8000`. Open the RunPod HTTP service URL for port `8000`.
+The server defaults to `0.0.0.0:8000`. Open the RunPod HTTP service URL for port `8000`, which usually looks similar to `https://<pod-id>-8000.proxy.runpod.net`.
 
 Important: a running pod can cost money even before training starts. Launch this template only when ready to run preflight/speedrun, and stop or terminate the pod after preserving artifacts from `NANOCHAT_BASE_DIR`.
 
