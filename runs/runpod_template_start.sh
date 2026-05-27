@@ -9,9 +9,6 @@ export NANOCHAT_REPO_URL="${NANOCHAT_REPO_URL:-https://github.com/egcode/nanocha
 export NANOCHAT_BRANCH="${NANOCHAT_BRANCH:-master}"
 export NANOCHAT_DIR="${NANOCHAT_DIR:-/workspace/nanochat}"
 export NANOCHAT_BASE_DIR="${NANOCHAT_BASE_DIR:-/workspace/nanochat-cache}"
-export WANDB_API_KEY="${WANDB_API_KEY:-}"
-export WANDB_RUN="${WANDB_RUN:-nanochat-speedrun_v1}"
-export WANDB_MODE="${WANDB_MODE:-online}"
 
 fail() {
   echo "ERROR: $*" >&2
@@ -48,8 +45,14 @@ cd "$NANOCHAT_DIR"
 
 echo "Bootstrap OK. Next commands:"
 echo "  cd $NANOCHAT_DIR"
+echo "  export NANOCHAT_BASE_DIR=$NANOCHAT_BASE_DIR"
+echo "  export PATH=\"\$HOME/.local/bin:\$PATH\""
+echo "  command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh"
+echo "  export PATH=\"\$HOME/.local/bin:\$PATH\""
+echo "  uv sync --extra gpu"
+echo "  source .venv/bin/activate"
 echo "  bash runs/preflight_artifacts.sh"
-echo "  screen -L -Logfile \"\$NANOCHAT_BASE_DIR/speedrun.log\" -S speedrun bash runs/speedrun.sh"
+echo "  WANDB_RUN=nanochat-speedrun_v1 screen -L -Logfile \"\$NANOCHAT_BASE_DIR/speedrun.log\" -S speedrun bash runs/speedrun.sh"
 
 [[ -x /start.sh ]] || fail "/start.sh was not found"
 exec /start.sh

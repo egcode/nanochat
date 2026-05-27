@@ -97,34 +97,58 @@ WANDB_API_KEY={{ RUNPOD_SECRET_WANDB_API_KEY }}
 HOME=/workspace
 ```
 
-These variables already have defaults in [runs/runpod_template_start.sh](runs/runpod_template_start.sh), but can be overridden in the RunPod template if needed:
+The training command below sets `WANDB_RUN=nanochat-speedrun_v1` explicitly. For a rerun, change it to something like `nanochat-speedrun_v2`, so W&B keeps each attempt separate.
 
-```text
-WANDB_RUN=nanochat-speedrun_v1
-WANDB_MODE=online
-NANOCHAT_BASE_DIR=/workspace/nanochat-cache
-NANOCHAT_REPO_URL=https://github.com/egcode/nanochat.git
-NANOCHAT_BRANCH=master
-```
+Paste the contents of [runs/runpod_template_start.sh](runs/runpod_template_start.sh) into the RunPod template "Container Start Command" field. This command installs system packages, clones or updates nanochat in `/workspace/nanochat`, verifies the required training scripts exist, and then hands off to the container startup process. It does **not** start training automatically.
 
-The default W&B run name is `nanochat-speedrun_v1`. For a rerun, override `WANDB_RUN` in the RunPod template, for example `nanochat-speedrun_v2`, so W&B keeps each attempt separate.
+#### 1. After Pod Launch
 
-Paste the contents of [runs/runpod_template_start.sh](runs/runpod_template_start.sh) into the RunPod template "Container Start Command" field. This command installs system packages, clones or updates nanochat in `/workspace/nanochat`, checks out `NANOCHAT_BRANCH`, verifies the required training scripts exist, and then hands off to the container startup process. It does **not** start training automatically.
-
-After the pod starts, open a terminal in the pod and run the cheap artifact preflight:
+Open a terminal in the pod and set the artifact directory for this shell:
 
 ```bash
+# Repo and artifact directory
 cd /workspace/nanochat
+export NANOCHAT_BASE_DIR=/workspace/nanochat-cache
+mkdir -p "$NANOCHAT_BASE_DIR"
+
+# uv and Python environment
+export PATH="$HOME/.local/bin:$PATH"
+command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
+uv sync --extra gpu
+source .venv/bin/activate
+
+# Dependency/GPU check
+python -c "import torch, rustbpe, tiktoken, tokenizers; print('deps ok'); print('cuda', torch.cuda.is_available(), 'gpus', torch.cuda.device_count())"
+```
+
+#### 2. Preflight
+
+Run the cheap artifact preflight:
+
+```bash
+set -o pipefail
 bash runs/preflight_artifacts.sh 2>&1 | tee "$NANOCHAT_BASE_DIR/preflight.log"
 ```
 
 The preflight confirms that `NANOCHAT_BASE_DIR` is writable and that tokenizer files, checkpoints, optimizer state, metadata, and report files are actually being saved.
 
+Verify the preflight passed before starting the paid run:
+
+```bash
+grep -q "Preflight passed. Expected artifacts were saved." "$NANOCHAT_BASE_DIR/preflight.log" && echo "preflight ok"
+latest="$(find "$NANOCHAT_BASE_DIR" -maxdepth 1 -type d -name 'preflight_artifacts_*' | sort | tail -n 1)"
+find "$latest" -maxdepth 4 -type f | sort
+```
+
+#### 3. Training
+
 If the preflight passes, start the real 8 GPU speedrun:
 
 ```bash
 cd /workspace/nanochat
-screen -L -Logfile "$NANOCHAT_BASE_DIR/speedrun.log" -S speedrun bash runs/speedrun.sh
+export NANOCHAT_BASE_DIR=/workspace/nanochat-cache
+source .venv/bin/activate
+WANDB_RUN=nanochat-speedrun_v1 screen -L -Logfile "$NANOCHAT_BASE_DIR/speedrun.log" -S speedrun bash runs/speedrun.sh
 ```
 
 This keeps the main terminal log at `$NANOCHAT_BASE_DIR/speedrun.log`. Training artifacts, checkpoints, tokenizer files, eval files, and generated reports are also written under `NANOCHAT_BASE_DIR`.
@@ -145,7 +169,9 @@ screen -ls
 tail -f "$NANOCHAT_BASE_DIR/speedrun.log"
 ```
 
-After training finishes, run the web chat UI from the same pod. Make sure the RunPod template exposes HTTP port `8000`, then start the server:
+#### 4. After Training: Web UI
+
+Run the web chat UI from the same pod. Make sure the RunPod template exposes HTTP port `8000`, then start the server:
 
 ```bash
 cd /workspace/nanochat
