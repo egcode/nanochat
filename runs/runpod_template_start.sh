@@ -24,7 +24,7 @@ mkdir -p /workspace "$NANOCHAT_BASE_DIR"
 if command -v apt-get >/dev/null 2>&1; then
   apt-get update
   DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    git nano ninja-build build-essential python3-dev python3-venv \
+    git nano screen ninja-build build-essential python3-dev python3-venv \
     libnuma1 libnuma-dev pkg-config curl ca-certificates
 fi
 
