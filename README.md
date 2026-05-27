@@ -181,6 +181,30 @@ python -m scripts.chat_web
 
 The server defaults to `0.0.0.0:8000`. Open the RunPod HTTP service URL for port `8000`, which usually looks similar to `https://<pod-id>-8000.proxy.runpod.net`.
 
+#### 5. Preserve Artifacts
+
+After training and the web UI check, archive the important files before deleting the pod:
+
+```bash
+cd "$NANOCHAT_BASE_DIR"
+tar -czf /workspace/nanochat-artifacts.tar.gz \
+  tokenizer \
+  base_checkpoints \
+  chat_checkpoints \
+  report \
+  speedrun.log \
+  identity_conversations.jsonl
+ls -lh /workspace/nanochat-artifacts.tar.gz
+```
+
+From your Mac, copy the archive down:
+
+```bash
+scp -P <ssh-port> root@<pod-ip>:/workspace/nanochat-artifacts.tar.gz ~/Downloads/
+```
+
+Replace `<ssh-port>` and `<pod-ip>` with the values from the RunPod Connect panel.
+
 Important: a running pod can cost money even before training starts. Launch this template only when ready to run preflight/speedrun, and stop or terminate the pod after preserving artifacts from `NANOCHAT_BASE_DIR`.
 
 ### Reproduce and talk to GPT-2
