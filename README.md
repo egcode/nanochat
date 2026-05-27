@@ -113,7 +113,7 @@ After the pod starts, open a terminal in the pod and run the cheap artifact pref
 
 ```bash
 cd /workspace/nanochat
-bash runs/preflight_artifacts.sh
+bash runs/preflight_artifacts.sh 2>&1 | tee "$NANOCHAT_BASE_DIR/preflight.log"
 ```
 
 The preflight confirms that `NANOCHAT_BASE_DIR` is writable and that tokenizer files, checkpoints, optimizer state, metadata, and report files are actually being saved.
@@ -123,6 +123,24 @@ If the preflight passes, start the real 8 GPU speedrun:
 ```bash
 cd /workspace/nanochat
 screen -L -Logfile "$NANOCHAT_BASE_DIR/speedrun.log" -S speedrun bash runs/speedrun.sh
+```
+
+This keeps the main terminal log at `$NANOCHAT_BASE_DIR/speedrun.log`. Training artifacts, checkpoints, tokenizer files, eval files, and generated reports are also written under `NANOCHAT_BASE_DIR`.
+
+Useful `screen` commands while training:
+
+```bash
+# detach from the screen session without stopping training:
+# press Ctrl-a, then press d
+
+# reattach later:
+screen -r speedrun
+
+# list screen sessions:
+screen -ls
+
+# watch the saved training log without reattaching:
+tail -f "$NANOCHAT_BASE_DIR/speedrun.log"
 ```
 
 After training finishes, run the web chat UI from the same pod. Make sure the RunPod template exposes HTTP port `8000`, then start the server:
