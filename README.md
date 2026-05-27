@@ -100,12 +100,14 @@ HOME=/workspace
 These variables already have defaults in [runs/runpod_template_start.sh](runs/runpod_template_start.sh), but can be overridden in the RunPod template if needed:
 
 ```text
-WANDB_RUN=nanochat-speedrun
+WANDB_RUN=nanochat-speedrun_v1
 WANDB_MODE=online
 NANOCHAT_BASE_DIR=/workspace/nanochat-cache
 NANOCHAT_REPO_URL=https://github.com/egcode/nanochat.git
 NANOCHAT_BRANCH=master
 ```
+
+The default W&B run name is `nanochat-speedrun_v1`. For a rerun, override `WANDB_RUN` in the RunPod template, for example `nanochat-speedrun_v2`, so W&B keeps each attempt separate.
 
 Paste the contents of [runs/runpod_template_start.sh](runs/runpod_template_start.sh) into the RunPod template "Container Start Command" field. This command installs system packages, clones or updates nanochat in `/workspace/nanochat`, checks out `NANOCHAT_BRANCH`, verifies the required training scripts exist, and then hands off to the container startup process. It does **not** start training automatically.
 

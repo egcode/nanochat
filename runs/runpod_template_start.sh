@@ -10,7 +10,7 @@ export NANOCHAT_BRANCH="${NANOCHAT_BRANCH:-master}"
 export NANOCHAT_DIR="${NANOCHAT_DIR:-/workspace/nanochat}"
 export NANOCHAT_BASE_DIR="${NANOCHAT_BASE_DIR:-/workspace/nanochat-cache}"
 export WANDB_API_KEY="${WANDB_API_KEY:-}"
-export WANDB_RUN="${WANDB_RUN:-nanochat-speedrun}"
+export WANDB_RUN="${WANDB_RUN:-nanochat-speedrun_v1}"
 export WANDB_MODE="${WANDB_MODE:-online}"
 
 fail() {
