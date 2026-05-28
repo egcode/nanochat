@@ -109,6 +109,7 @@ Open a terminal in the pod and set the artifact directory for this shell:
 # Repo and artifact directory
 cd /workspace/nanochat
 export NANOCHAT_BASE_DIR=/workspace/nanochat-cache
+export HF_HUB_ENABLE_HF_TRANSFER=0
 mkdir -p "$NANOCHAT_BASE_DIR"
 
 # uv and Python environment
@@ -147,6 +148,7 @@ If the preflight passes, start the real 8 GPU speedrun:
 ```bash
 cd /workspace/nanochat
 export NANOCHAT_BASE_DIR=/workspace/nanochat-cache
+export HF_HUB_ENABLE_HF_TRANSFER=0
 source .venv/bin/activate
 WANDB_RUN=nanochat-speedrun_v1 screen -L -Logfile "$NANOCHAT_BASE_DIR/speedrun.log" -S speedrun bash runs/speedrun.sh
 ```

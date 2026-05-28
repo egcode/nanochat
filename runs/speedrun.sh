@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # This script is configured to train your own GPT-2 grade LLM (pretraining + finetuning)
 # It is designed to run on a blank 8XH100 GPU node and takes approximately 3 hours to complete.
@@ -14,6 +15,8 @@
 # Override NANOCHAT_BASE_DIR before launching if you want artifacts on a persistent volume.
 export OMP_NUM_THREADS=1
 export NANOCHAT_BASE_DIR="${NANOCHAT_BASE_DIR:-$HOME/.cache/nanochat}"
+# RunPod images can set this without installing hf_transfer, which breaks Hugging Face dataset downloads.
+export HF_HUB_ENABLE_HF_TRANSFER=0
 mkdir -p $NANOCHAT_BASE_DIR
 
 # -----------------------------------------------------------------------------
@@ -35,7 +38,7 @@ source .venv/bin/activate
 #    `wandb login`
 # 2) Set the WANDB_RUN environment variable when running this script, e.g.:
 #    `WANDB_RUN=d26 bash speedrun.sh`
-if [ -z "$WANDB_RUN" ]; then
+if [ -z "${WANDB_RUN:-}" ]; then
     # by default use "dummy" : it's handled as a special case, skips logging to wandb
     WANDB_RUN=dummy
 fi
