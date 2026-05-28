@@ -177,6 +177,7 @@ Run the web chat UI from the same pod. Make sure the RunPod template exposes HTT
 
 ```bash
 cd /workspace/nanochat
+export NANOCHAT_BASE_DIR=/workspace/nanochat-cache
 source .venv/bin/activate
 python -m scripts.chat_web
 ```
@@ -185,24 +186,25 @@ The server defaults to `0.0.0.0:8000`. Open the RunPod HTTP service URL for port
 
 #### 5. Preserve Artifacts
 
-After training and the web UI check, archive the important files before deleting the pod:
+After training and the web UI check, archive the important files before deleting the pod. Use plain `tar` instead of gzip because model checkpoint files are large and slow to compress:
 
 ```bash
 cd "$NANOCHAT_BASE_DIR"
-tar -czf /workspace/nanochat-artifacts.tar.gz \
+tar -cf /workspace/nanochat-artifacts.tar \
   tokenizer \
   base_checkpoints \
-  chat_checkpoints \
+  chatsft_checkpoints \
   report \
   speedrun.log \
+  sft_retry.log \
   identity_conversations.jsonl
-ls -lh /workspace/nanochat-artifacts.tar.gz
+ls -lh /workspace/nanochat-artifacts.tar
 ```
 
 From your Mac, copy the archive down:
 
 ```bash
-scp -P <ssh-port> root@<pod-ip>:/workspace/nanochat-artifacts.tar.gz ~/Downloads/
+scp -P <ssh-port> root@<pod-ip>:/workspace/nanochat-artifacts.tar ~/Downloads/
 ```
 
 Replace `<ssh-port>` and `<pod-ip>` with the values from the RunPod Connect panel.
