@@ -55,8 +55,9 @@ Suggested walkthrough order:
 - [dev/02_gpt_walkthrough.ipynb](dev/02_gpt_walkthrough.ipynb) explains how [nanochat/gpt.py](nanochat/gpt.py) turns token-id tensors into embeddings, block activations, logits, and loss.
 - [dev/03_training_walkthrough.ipynb](dev/03_training_walkthrough.ipynb) explains how token batches become loss, gradients, and optimizer updates.
 - [dev/04_eval_and_generation_walkthrough.ipynb](dev/04_eval_and_generation_walkthrough.ipynb) explains how checkpoints are loaded, how generation uses logits and KV cache, and how BPB / CORE evaluation should be interpreted.
+- [dev/05_artifacts_and_checkpoints_walkthrough.ipynb](dev/05_artifacts_and_checkpoints_walkthrough.ipynb) explains what a real RunPod artifact bundle contains, which files are needed for inference, which files are needed to resume training, and which log/report lines matter.
 
-Open notebooks with the repo's `.venv` after syncing with `--group dev`. These notebooks are intentionally lightweight and do not require downloading the pretraining dataset first.
+Open notebooks with the repo's `.venv` after syncing with `--group dev`. The first four notebooks are intentionally lightweight and do not require downloading the pretraining dataset first. The artifacts notebook uses `nanochat-artifacts/` if you copied back a real training run.
 
 Example terminal flow:
 
@@ -313,7 +314,8 @@ I've published a number of guides that might contain helpful information, most r
 │   ├── 01_tokenizer_walkthrough.ipynb # Toy notebook explaining the tokenizer pipeline
 │   ├── 02_gpt_walkthrough.ipynb       # Toy notebook explaining the GPT forward path
 │   ├── 03_training_walkthrough.ipynb  # Toy notebook explaining the training loop
-│   └── 04_eval_and_generation_walkthrough.ipynb # Toy notebook explaining eval/generation
+│   ├── 04_eval_and_generation_walkthrough.ipynb # Toy notebook explaining eval/generation
+│   └── 05_artifacts_and_checkpoints_walkthrough.ipynb # Notebook explaining saved training artifacts
 ├── nanochat
 │   ├── __init__.py                 # empty
 │   ├── checkpoint_manager.py       # Save/Load model checkpoints
