@@ -56,8 +56,9 @@ Suggested walkthrough order:
 - [dev/03_training_walkthrough.ipynb](dev/03_training_walkthrough.ipynb) explains how token batches become loss, gradients, and optimizer updates.
 - [dev/04_eval_and_generation_walkthrough.ipynb](dev/04_eval_and_generation_walkthrough.ipynb) explains how checkpoints are loaded, how generation uses logits and KV cache, and how BPB / CORE evaluation should be interpreted.
 - [dev/05_artifacts_and_checkpoints_walkthrough.ipynb](dev/05_artifacts_and_checkpoints_walkthrough.ipynb) explains what a real RunPod artifact bundle contains, which files are needed for inference, which files are needed to resume training, and which log/report lines matter.
+- [dev/06_sft_walkthrough.ipynb](dev/06_sft_walkthrough.ipynb) explains how SFT turns the base model into a chat model using conversation tasks, assistant-only loss masks, and `chatsft_checkpoints`.
 
-Open notebooks with the repo's `.venv` after syncing with `--group dev`. The first four notebooks are intentionally lightweight and do not require downloading the pretraining dataset first. The artifacts notebook uses `nanochat-artifacts/` if you copied back a real training run.
+Open notebooks with the repo's `.venv` after syncing with `--group dev`. The first four notebooks are intentionally lightweight and do not require downloading the pretraining dataset first. The later notebooks use `nanochat-artifacts/` if you copied back a real training run.
 
 Example terminal flow:
 
@@ -315,7 +316,8 @@ I've published a number of guides that might contain helpful information, most r
 │   ├── 02_gpt_walkthrough.ipynb       # Toy notebook explaining the GPT forward path
 │   ├── 03_training_walkthrough.ipynb  # Toy notebook explaining the training loop
 │   ├── 04_eval_and_generation_walkthrough.ipynb # Toy notebook explaining eval/generation
-│   └── 05_artifacts_and_checkpoints_walkthrough.ipynb # Notebook explaining saved training artifacts
+│   ├── 05_artifacts_and_checkpoints_walkthrough.ipynb # Notebook explaining saved training artifacts
+│   └── 06_sft_walkthrough.ipynb       # Notebook explaining supervised fine-tuning
 ├── nanochat
 │   ├── __init__.py                 # empty
 │   ├── checkpoint_manager.py       # Save/Load model checkpoints
