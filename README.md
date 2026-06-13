@@ -59,6 +59,7 @@ Suggested walkthrough order:
 - [dev/06_sft_walkthrough.ipynb](dev/06_sft_walkthrough.ipynb) explains how SFT turns the base model into a chat model using conversation tasks, assistant-only loss masks, and `chatsft_checkpoints`.
 - [dev/07_inference_engine_walkthrough.ipynb](dev/07_inference_engine_walkthrough.ipynb) explains how chat prompts become token streams, how prefill and KV-cache decoding work, why generation stops on `<|assistant_end|>`, and how calculator tool output is injected.
 - [dev/08_chat_rl_walkthrough.ipynb](dev/08_chat_rl_walkthrough.ipynb) explains how optional GSM8K reinforcement learning samples candidate answers, scores them, constructs relative advantages, updates generated-token probabilities, evaluates `pass@k`, and saves `chatrl_checkpoints`.
+- [dev/09_distributed_training_walkthrough.ipynb](dev/09_distributed_training_walkthrough.ipynb) explains how `torchrun`, ranks, data sharding, gradient accumulation, distributed optimizer sync, and sharded checkpoints work in nanochat's multi-GPU training.
 
 Open notebooks with the repo's `.venv` after syncing with `--group dev`. The first four notebooks are intentionally lightweight and do not require downloading the pretraining dataset first. The later notebooks use `nanochat-artifacts/` if you copied back a real training run.
 
@@ -321,7 +322,8 @@ I've published a number of guides that might contain helpful information, most r
 │   ├── 05_artifacts_and_checkpoints_walkthrough.ipynb # Notebook explaining saved training artifacts
 │   ├── 06_sft_walkthrough.ipynb       # Notebook explaining supervised fine-tuning
 │   ├── 07_inference_engine_walkthrough.ipynb # Notebook explaining efficient chat inference
-│   └── 08_chat_rl_walkthrough.ipynb       # Notebook explaining optional GSM8K reinforcement learning
+│   ├── 08_chat_rl_walkthrough.ipynb       # Notebook explaining optional GSM8K reinforcement learning
+│   └── 09_distributed_training_walkthrough.ipynb # Notebook explaining multi-GPU training
 ├── nanochat
 │   ├── __init__.py                 # empty
 │   ├── checkpoint_manager.py       # Save/Load model checkpoints
